@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Must run before anything else to prevent scroll restoration -->
+  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
+  <title>Kondominia — Software de gestión condominial para República Dominicana</title>
+  <meta name="description" content="Administra condominios, nómina, proveedores, caja y reportes fiscales DGII desde una sola plataforma. Hecho para República Dominicana." />
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Quicksand', 'sans-serif'],
+          },
+          colors: {
+            cyan: {
+              400: '#38d8ff',
+              500: '#00c7fc',
+              600: '#00acd8',
+            },
+            navy: {
+              900: '#1A1A2E',
+              800: '#16213E',
+              700: '#0F3460',
+            },
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+  html.no-smooth { scroll-behavior: auto; }
+    body { font-family: 'Quicksand', sans-serif; }
+
+    /* Hero gradient */
+    .hero-bg {
+      background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 60%, #16213E 100%);
+    }
+
+    /* Cyan glow on cards */
+    .card-glow:hover {
+      box-shadow: 0 0 0 1px #00c7fc40, 0 8px 24px #00c7fc18;
+    }
+
+    /* Subtle gradient on feature cards */
+    .feature-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    /* Pricing highlight */
+    .pricing-highlight {
+      background: linear-gradient(145deg, #1A1A2E 0%, #0F3460 100%);
+    }
+
+    /* Comparison check/x */
+    .check { color: #00c7fc; }
+    .cross { color: #cbd5e1; }
+
+    /* Sticky nav backdrop */
+    .nav-blur {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Badge pulse */
+    @keyframes pulse-badge {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .badge-pulse { animation: pulse-badge 2.5s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-white text-slate-900 antialiased">
+
+<!-- ─── NAV ─────────────────────────────────────────────────────────────────── -->
+<nav class="fixed top-0 inset-x-0 z-50 nav-blur bg-white/90 border-b border-slate-100">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between h-16">
+    <!-- Logo -->
+    <a href="#" class="flex items-center">
+      <img src="./kondominia-1-2.png" alt="Kondominia" class="h-9 w-auto" />
+    </a>
+
+    <!-- Links (desktop) -->
+    <div class="hidden md:flex items-center gap-7 text-[14px] font-semibold text-slate-600">
+      <a href="#funcionalidades" class="hover:text-cyan-500 transition-colors">Funcionalidades</a>
+      <a href="#planes" class="hover:text-cyan-500 transition-colors">Planes</a>
+      <a href="#cuotas" class="hover:text-cyan-500 transition-colors">Cuotas y Cobros</a>
+      <a href="#testimonios" class="hover:text-cyan-500 transition-colors">Testimonios</a>
+    </div>
+
+    <!-- CTA + hamburger -->
+    <div class="flex items-center gap-3">
+      <a href="/login" class="hidden sm:inline-block text-[14px] font-semibold text-slate-600 hover:text-cyan-500 transition-colors">Iniciar sesión</a>
+      <a href="/register" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-[14px] font-bold text-white transition-all"
+         style="background:#00c7fc" onmouseover="this.style.background='#00acd8'" onmouseout="this.style.background='#00c7fc'">
+        Empezar gratis
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <!-- Hamburger button (mobile only) -->
+      <button id="nav-toggle" class="md:hidden flex flex-col justify-center items-center w-9 h-9 rounded-lg hover:bg-slate-100 transition-colors gap-1.5" aria-label="Abrir menú">
+        <span id="ham-1" class="block w-5 h-0.5 bg-slate-700 transition-all duration-200 origin-center"></span>
+        <span id="ham-2" class="block w-5 h-0.5 bg-slate-700 transition-all duration-200"></span>
+        <span id="ham-3" class="block w-5 h-0.5 bg-slate-700 transition-all duration-200 origin-center"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu panel -->
+  <div id="mobile-menu" class="md:hidden overflow-hidden transition-all duration-300" style="max-height:0">
+    <div class="px-5 pb-5 pt-2 border-t border-slate-100 flex flex-col gap-1">
+      <a href="#funcionalidades" class="mobile-nav-link py-3 text-[15px] font-semibold text-slate-700 hover:text-cyan-500 border-b border-slate-100 transition-colors">Funcionalidades</a>
+      <a href="#planes"          class="mobile-nav-link py-3 text-[15px] font-semibold text-slate-700 hover:text-cyan-500 border-b border-slate-100 transition-colors">Planes y precios</a>
+      <a href="#cuotas"          class="mobile-nav-link py-3 text-[15px] font-semibold text-slate-700 hover:text-cyan-500 border-b border-slate-100 transition-colors">Cuotas y Cobros</a>
+      <a href="#gas"             class="mobile-nav-link py-3 text-[15px] font-semibold text-slate-700 hover:text-cyan-500 border-b border-slate-100 transition-colors">Gas</a>
+      <a href="#visitas"         class="mobile-nav-link py-3 text-[15px] font-semibold text-slate-700 hover:text-cyan-500 border-b border-slate-100 transition-colors">Visitas</a>
+      <a href="#testimonios"     class="mobile-nav-link py-3 text-[15px] font-semibold text-slate-700 hover:text-cyan-500 border-b border-slate-100 transition-colors">Testimonios</a>
+      <div class="flex flex-col gap-2 mt-3">
+        <a href="/login" class="py-3 text-center text-[14px] font-semibold text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">Iniciar sesión</a>
+        <a href="/register" class="py-3 text-center text-[14px] font-bold text-white rounded-xl transition-all" style="background:#00c7fc">Empezar gratis →</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ─── HERO ─────────────────────────────────────────────────────────────────── -->
+<section class="hero-bg pt-28 pb-20 sm:pt-36 sm:pb-28 relative overflow-hidden">
+  <!-- Background decoration -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-10" style="background:radial-gradient(circle, #00c7fc 0%, transparent 70%)"></div>
+    <div class="absolute bottom-0 -left-24 w-80 h-80 rounded-full opacity-5" style="background:radial-gradient(circle, #00c7fc 0%, transparent 70%)"></div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 relative">
+    <!-- Logo mark en hero -->
+    <div class="flex justify-center mb-6">
+      <img src="./kondominia-5-3.png" alt="Kondominia" class="h-20 w-auto" />
+    </div>
+
+    <!-- Headline -->
+    <h1 class="text-[40px] sm:text-[58px] font-bold text-white text-center leading-[1.15] max-w-4xl mx-auto">
+      <span class="block">Administra</span>
+      <span id="prop-type" class="block" style="color:#00c7fc;transition:opacity 0.35s ease">Condominios</span>
+      <span id="prop-tagline" class="block" style="color:#f97316;transition:opacity 0.35s ease">Sin Complicaciones</span>
+    </h1>
+
+    <p class="mt-5 text-[17px] text-slate-300 text-center max-w-2xl mx-auto leading-relaxed">
+      Gastos, nómina, proveedores, cuotas, gas y más — todo en una plataforma lista para administradoras y empresas.
+    </p>
+
+    <!-- CTAs -->
+    <div class="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="/register"
+         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-[15px] font-bold text-white shadow-lg transition-all"
+         style="background:#00c7fc"
+         onmouseover="this.style.background='#00acd8';this.style.transform='translateY(-1px)'"
+         onmouseout="this.style.background='#00c7fc';this.style.transform='translateY(0)'">
+        Empezar gratis — sin tarjeta
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#funcionalidades"
+         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-[15px] font-semibold text-white border border-white/20 hover:bg-white/10 transition-all">
+        Ver funcionalidades
+      </a>
+    </div>
+
+    <!-- Social proof -->
+    <p class="mt-8 text-center text-[13px] text-slate-400">
+      Más de <strong class="text-white">120 administradoras</strong> confían en Kondominia ·
+      <strong class="text-white">+4,500 unidades</strong> gestionadas
+    </p>
+  </div>
+</section>
+
+
+<!-- ─── FEATURE STRIP ────────────────────────────────────────────────────────── -->
+<div class="bg-slate-50 border-y border-slate-100 py-4 overflow-x-auto">
+  <div class="max-w-5xl mx-auto px-5 flex items-center justify-start sm:justify-center gap-6 sm:gap-10 whitespace-nowrap text-[13px] font-semibold text-slate-500">
+    <span class="flex items-center gap-2">
+      <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Cumplimiento DGII
+    </span>
+    <span class="flex items-center gap-2">
+      <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Facturación electrónica POLARIS / ECF
+    </span>
+    <span class="flex items-center gap-2">
+      <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Nómina y TSS/INFOTEP
+    </span>
+    <span class="flex items-center gap-2">
+      <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Multi-condominio
+    </span>
+    <span class="flex items-center gap-2">
+      <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Soporte en español
+    </span>
+  </div>
+</div>
+
+
+<!-- ─── FEATURES ─────────────────────────────────────────────────────────────── -->
+<section id="funcionalidades" class="py-20 sm:py-28 bg-white">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="text-center mb-14">
+      <p class="text-[12px] font-bold uppercase tracking-widest" style="color:#00c7fc">Plataforma completa</p>
+      <h2 class="mt-2 text-[32px] sm:text-[40px] font-bold text-navy-900" style="color:#1A1A2E">Todo lo que necesita tu administradora</h2>
+      <p class="mt-3 text-[16px] text-slate-500 max-w-2xl mx-auto">
+        Desde los gastos del día a día hasta los reportes que exige la DGII. Sin módulos adicionales, sin configuraciones complicadas.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <!-- Gastos y facturas -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Gastos y facturas de proveedores</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Registra facturas, aplica pagos parciales, administra proveedores por categoría y lleva el control de cuentas por pagar. Incluye NCF y vencimientos.
+        </p>
+      </div>
+
+      <!-- Nómina -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Nómina con TSS e INFOTEP</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Crea nóminas mensual o quincenal, calcula automáticamente TSS patronal y laboral, INFOTEP y retenciones ISR. Exporta para reportes DGII.
+        </p>
+      </div>
+
+      <!-- Caja y Bancos -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Caja y Bancos</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Registra ingresos y egresos, maneja múltiples cuentas bancarias, concilia transacciones y visualiza el flujo de efectivo por condominio.
+        </p>
+      </div>
+
+      <!-- Reportes fiscales -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Reportes fiscales DGII</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          ITBIS facturado, ITBIS retenido, ISC/CDT, aportes laborales e ISR retenido. Exporta a Excel con un clic, listos para declarar.
+        </p>
+      </div>
+
+      <!-- Multi-usuario y roles -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Equipo y accesos por rol</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Asigna roles de Administrador, Staff o Propietario. Cada usuario ve solo lo que le corresponde. Auditoría de cambios incluida.
+        </p>
+      </div>
+
+      <!-- Portal propietario -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Portal para propietarios</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Los propietarios consultan su estado de cuenta, historial de pagos y documentos directamente desde el portal web. Sin llamadas ni WhatsApp.
+        </p>
+      </div>
+
+      <!-- Reportes operativos -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Reportes operativos</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Directorio de proveedores, cuentas por pagar vencidas, ejecución presupuestal y más. Exporta a Excel o PDF con filtros por período.
+        </p>
+      </div>
+
+      <!-- Visitas -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Control de visitas</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Registra visitas, paquetes y entregas. Los propietarios pueden pre-autorizar visitas. Historial completo de accesos por unidad.
+        </p>
+      </div>
+
+      <!-- Lectura de gas -->
+      <div class="feature-card card-glow p-6 rounded-2xl border border-slate-100 transition-all">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#00c7fc15">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+        <h3 class="text-[17px] font-bold text-slate-900 mb-2">Medidores de gas</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">
+          Registra lecturas mensuales por unidad, calcula el consumo automáticamente y genera cargos proporcionales para cada propietario.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── CUOTAS Y COBROS ───────────────────────────────────────────────────────── -->
+<section id="cuotas" class="py-20 sm:py-28" style="background:#1A1A2E">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <!-- Text -->
+      <div>
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-bold mb-5"
+              style="background:#00c7fc20;color:#00c7fc;border:1px solid #00c7fc40">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Cobros sin complicaciones
+        </span>
+        <h2 class="text-[32px] sm:text-[38px] font-bold text-white leading-tight mb-5">
+          Genera cuotas y cobra<br/>
+          directo por
+          <span class="inline-flex items-center gap-1.5 align-middle" style="color:#25D366">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="16" fill="#25D366"/>
+              <path d="M22.5 9.5A9.1 9.1 0 0 0 16 7a9 9 0 0 0-7.8 13.5L7 25l4.6-1.2A9 9 0 0 0 25 16a9.1 9.1 0 0 0-2.5-6.5zm-6.5 13.8a7.5 7.5 0 0 1-3.8-1l-.3-.2-2.7.7.7-2.7-.2-.3a7.5 7.5 0 1 1 6.3 3.5zm4.1-5.6c-.2-.1-1.3-.6-1.5-.7s-.3-.1-.5.1-.5.7-.6.8-.2.1-.4 0a6 6 0 0 1-1.8-1.1 6.7 6.7 0 0 1-1.2-1.5c-.1-.2 0-.4.1-.5l.4-.4.2-.3v-.3l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4a.8.8 0 0 0-.6.3 2.5 2.5 0 0 0-.8 1.9 4.4 4.4 0 0 0 .9 2.3 10 10 0 0 0 3.8 3.4c.5.2.9.4 1.3.5a3 3 0 0 0 1.4.1 2.3 2.3 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z" fill="white"/>
+            </svg>
+            WhatsApp
+          </span>
+        </h2>
+        <p class="text-[16px] text-slate-300 leading-relaxed mb-7">
+          Olvídate de los estados de cuenta manuales. Kondominia genera las cuotas de mantenimiento, envía recibos automáticos y le recuerda a cada propietario con un solo clic.
+        </p>
+
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#00c7fc20">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-white">Cuotas automáticas de mantenimiento</span>
+              <p class="text-[13px] text-slate-400 mt-0.5">Define el monto por unidad y Kondominia genera las cuotas del mes para cada propietario sin que tengas que hacer nada.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#00c7fc20">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-white">Recibos de pago instantáneos</span>
+              <p class="text-[13px] text-slate-400 mt-0.5">Al registrar un pago, el propietario recibe su recibo en segundos. Sin imprimir, sin llenar formularios a mano.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#00c7fc20">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-white">Notificaciones por WhatsApp y email</span>
+              <p class="text-[13px] text-slate-400 mt-0.5">Envía recordatorios de pago, estados de cuenta y recibos directamente al WhatsApp o correo de cada propietario.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#00c7fc20">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-white">Control de mora en tiempo real</span>
+              <p class="text-[13px] text-slate-400 mt-0.5">Ve de un vistazo quién está al día, quién debe y cuánto llevan de mora. Sin buscar en hojas de cálculo.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Visual card -->
+      <div class="relative">
+        <div class="rounded-2xl border p-6 space-y-3" style="background:#0F3460;border-color:#00c7fc30">
+          <p class="text-[12px] font-bold uppercase tracking-widest mb-4" style="color:#00c7fc">Estado de cobros — Abril 2026</p>
+
+          <!-- Mock cuota rows -->
+          <div class="flex items-center justify-between p-3 rounded-xl" style="background:#00c7fc10">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style="background:#0F3460">A1</div>
+              <div>
+                <p class="text-[13px] font-semibold text-white">Carlos Méndez</p>
+                <p class="text-[11px] text-slate-400">Apto 1A · RD$4,500</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" style="background:#00c7fc20;color:#00c7fc">Pagado</span>
+              <button title="Imprimir recibo" class="opacity-60 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </button>
+              <button title="Enviar por WhatsApp" class="opacity-80 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#25D366"/><path d="M22.5 9.5A9.1 9.1 0 0 0 16 7a9 9 0 0 0-7.8 13.5L7 25l4.6-1.2A9 9 0 0 0 25 16a9.1 9.1 0 0 0-2.5-6.5zm-6.5 13.8a7.5 7.5 0 0 1-3.8-1l-.3-.2-2.7.7.7-2.7-.2-.3a7.5 7.5 0 1 1 6.3 3.5zm4.1-5.6c-.2-.1-1.3-.6-1.5-.7s-.3-.1-.5.1-.5.7-.6.8-.2.1-.4 0a6 6 0 0 1-1.8-1.1 6.7 6.7 0 0 1-1.2-1.5c-.1-.2 0-.4.1-.5l.4-.4.2-.3v-.3l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4a.8.8 0 0 0-.6.3 2.5 2.5 0 0 0-.8 1.9 4.4 4.4 0 0 0 .9 2.3 10 10 0 0 0 3.8 3.4c.5.2.9.4 1.3.5a3 3 0 0 0 1.4.1 2.3 2.3 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z" fill="white"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl" style="background:#00c7fc10">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style="background:#0F3460">B3</div>
+              <div>
+                <p class="text-[13px] font-semibold text-white">Ana García</p>
+                <p class="text-[11px] text-slate-400">Apto 3B · RD$4,500</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" style="background:#f59e0b20;color:#f59e0b">Pendiente</span>
+              <button title="Imprimir recibo" class="opacity-60 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </button>
+              <button title="Enviar por WhatsApp" class="opacity-80 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#25D366"/><path d="M22.5 9.5A9.1 9.1 0 0 0 16 7a9 9 0 0 0-7.8 13.5L7 25l4.6-1.2A9 9 0 0 0 25 16a9.1 9.1 0 0 0-2.5-6.5zm-6.5 13.8a7.5 7.5 0 0 1-3.8-1l-.3-.2-2.7.7.7-2.7-.2-.3a7.5 7.5 0 1 1 6.3 3.5zm4.1-5.6c-.2-.1-1.3-.6-1.5-.7s-.3-.1-.5.1-.5.7-.6.8-.2.1-.4 0a6 6 0 0 1-1.8-1.1 6.7 6.7 0 0 1-1.2-1.5c-.1-.2 0-.4.1-.5l.4-.4.2-.3v-.3l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4a.8.8 0 0 0-.6.3 2.5 2.5 0 0 0-.8 1.9 4.4 4.4 0 0 0 .9 2.3 10 10 0 0 0 3.8 3.4c.5.2.9.4 1.3.5a3 3 0 0 0 1.4.1 2.3 2.3 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z" fill="white"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl" style="background:#00c7fc10">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style="background:#0F3460">C2</div>
+              <div>
+                <p class="text-[13px] font-semibold text-white">Juan Pérez</p>
+                <p class="text-[11px] text-slate-400">Apto 2C · RD$4,500</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" style="background:#ef444420;color:#ef4444">En mora</span>
+              <button title="Imprimir recibo" class="opacity-60 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </button>
+              <button title="Enviar por WhatsApp" class="opacity-80 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#25D366"/><path d="M22.5 9.5A9.1 9.1 0 0 0 16 7a9 9 0 0 0-7.8 13.5L7 25l4.6-1.2A9 9 0 0 0 25 16a9.1 9.1 0 0 0-2.5-6.5zm-6.5 13.8a7.5 7.5 0 0 1-3.8-1l-.3-.2-2.7.7.7-2.7-.2-.3a7.5 7.5 0 1 1 6.3 3.5zm4.1-5.6c-.2-.1-1.3-.6-1.5-.7s-.3-.1-.5.1-.5.7-.6.8-.2.1-.4 0a6 6 0 0 1-1.8-1.1 6.7 6.7 0 0 1-1.2-1.5c-.1-.2 0-.4.1-.5l.4-.4.2-.3v-.3l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4a.8.8 0 0 0-.6.3 2.5 2.5 0 0 0-.8 1.9 4.4 4.4 0 0 0 .9 2.3 10 10 0 0 0 3.8 3.4c.5.2.9.4 1.3.5a3 3 0 0 0 1.4.1 2.3 2.3 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z" fill="white"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl" style="background:#00c7fc10">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0" style="background:#0F3460">D4</div>
+              <div>
+                <p class="text-[13px] font-semibold text-white">María López</p>
+                <p class="text-[11px] text-slate-400">Apto 4D · RD$4,500</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" style="background:#00c7fc20;color:#00c7fc">Pagado</span>
+              <button title="Imprimir recibo" class="opacity-60 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </button>
+              <button title="Enviar por WhatsApp" class="opacity-80 hover:opacity-100 transition-opacity">
+                <svg width="15" height="15" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#25D366"/><path d="M22.5 9.5A9.1 9.1 0 0 0 16 7a9 9 0 0 0-7.8 13.5L7 25l4.6-1.2A9 9 0 0 0 25 16a9.1 9.1 0 0 0-2.5-6.5zm-6.5 13.8a7.5 7.5 0 0 1-3.8-1l-.3-.2-2.7.7.7-2.7-.2-.3a7.5 7.5 0 1 1 6.3 3.5zm4.1-5.6c-.2-.1-1.3-.6-1.5-.7s-.3-.1-.5.1-.5.7-.6.8-.2.1-.4 0a6 6 0 0 1-1.8-1.1 6.7 6.7 0 0 1-1.2-1.5c-.1-.2 0-.4.1-.5l.4-.4.2-.3v-.3l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4a.8.8 0 0 0-.6.3 2.5 2.5 0 0 0-.8 1.9 4.4 4.4 0 0 0 .9 2.3 10 10 0 0 0 3.8 3.4c.5.2.9.4 1.3.5a3 3 0 0 0 1.4.1 2.3 2.3 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z" fill="white"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-3 border-t" style="border-color:#ffffff15">
+            <svg width="14" height="14" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#25D366"/><path d="M22.5 9.5A9.1 9.1 0 0 0 16 7a9 9 0 0 0-7.8 13.5L7 25l4.6-1.2A9 9 0 0 0 25 16a9.1 9.1 0 0 0-2.5-6.5zm-6.5 13.8a7.5 7.5 0 0 1-3.8-1l-.3-.2-2.7.7.7-2.7-.2-.3a7.5 7.5 0 1 1 6.3 3.5zm4.1-5.6c-.2-.1-1.3-.6-1.5-.7s-.3-.1-.5.1-.5.7-.6.8-.2.1-.4 0a6 6 0 0 1-1.8-1.1 6.7 6.7 0 0 1-1.2-1.5c-.1-.2 0-.4.1-.5l.4-.4.2-.3v-.3l-.7-1.6c-.2-.4-.4-.4-.5-.4h-.4a.8.8 0 0 0-.6.3 2.5 2.5 0 0 0-.8 1.9 4.4 4.4 0 0 0 .9 2.3 10 10 0 0 0 3.8 3.4c.5.2.9.4 1.3.5a3 3 0 0 0 1.4.1 2.3 2.3 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.5-.3z" fill="white"/></svg>
+            <p class="text-[12px] text-slate-400">Enviar recordatorio por WhatsApp a morosos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── GAS METERING ─────────────────────────────────────────────────────────── -->
+<section id="gas" class="py-20 sm:py-28 bg-white">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+      <!-- Visual mock -->
+      <div class="order-2 lg:order-1">
+        <div class="rounded-2xl border border-orange-100 overflow-hidden shadow-sm" style="background:#fffbf7">
+
+          <!-- Header del mock -->
+          <div class="flex items-center justify-between px-4 py-3 border-b border-orange-100 bg-orange-50">
+            <div class="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>
+              <span class="text-[13px] font-bold text-orange-700">Gas — Mayo 2026</span>
+            </div>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">3 de 8 con lectura</span>
+          </div>
+
+          <!-- Config strip -->
+          <div class="flex items-center gap-4 px-4 py-2 bg-orange-50/50 border-b border-orange-100 text-[11px] text-orange-600 font-medium">
+            <span>Precio: RD$85.00 / gal</span>
+            <span>·</span>
+            <span>Factor: 0.264 m³→gal</span>
+          </div>
+
+          <!-- Unit rows -->
+          <div class="divide-y divide-orange-50">
+
+            <!-- Row 1 — GENERADA -->
+            <div class="px-4 py-3">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <span class="text-[13px] font-bold text-slate-800">Apto 1A</span>
+                  <span class="text-[11px] text-slate-400 ml-2">Carlos Méndez</span>
+                </div>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Generada</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-[11px]">
+                <div>
+                  <p class="text-slate-400">Ant. m³</p>
+                  <p class="font-semibold text-slate-700">142.500</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Act. m³</p>
+                  <p class="font-semibold text-slate-700">156.800</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Consumo gal</p>
+                  <p class="font-semibold text-orange-600">3.779</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Monto</p>
+                  <p class="font-bold text-orange-700">RD$321.22</p>
+                </div>
+              </div>
+              <div class="mt-2 flex items-center gap-1.5">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span class="text-[10px] text-green-600">Foto del medidor subida</span>
+              </div>
+            </div>
+
+            <!-- Row 2 — REGISTRADA con anomalía -->
+            <div class="px-4 py-3">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <span class="text-[13px] font-bold text-slate-800">Apto 2B</span>
+                  <span class="text-[11px] text-slate-400 ml-2">Ana García</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Consumo inusual
+                  </span>
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Registrada</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-[11px]">
+                <div>
+                  <p class="text-slate-400">Ant. m³</p>
+                  <p class="font-semibold text-slate-700">89.200</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Act. m³</p>
+                  <p class="font-semibold text-slate-700">118.600</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Consumo gal</p>
+                  <p class="font-semibold text-orange-600">7.762</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Monto</p>
+                  <p class="font-bold text-orange-700">RD$659.77</p>
+                </div>
+              </div>
+              <!-- Foto upload button -->
+              <div class="mt-2 flex items-center gap-1.5">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span class="text-[10px] text-slate-400 cursor-pointer hover:text-orange-500 transition-colors">Subir foto del medidor</span>
+              </div>
+            </div>
+
+            <!-- Row 3 — PENDIENTE -->
+            <div class="px-4 py-3 opacity-60">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <span class="text-[13px] font-bold text-slate-800">Apto 3C</span>
+                  <span class="text-[11px] text-slate-400 ml-2">Juan Pérez</span>
+                </div>
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Pendiente</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-[11px]">
+                <div>
+                  <p class="text-slate-400">Ant. m³</p>
+                  <p class="font-semibold text-slate-500">201.100</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Act. m³</p>
+                  <input class="w-full border border-orange-200 rounded px-1.5 py-0.5 text-[11px] bg-white outline-none focus:border-orange-400" placeholder="0.000" readonly />
+                </div>
+                <div><p class="text-slate-300">—</p></div>
+                <div><p class="text-slate-300">—</p></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Footer totals -->
+          <div class="flex items-center justify-between px-4 py-3 bg-orange-50 border-t border-orange-100">
+            <span class="text-[12px] font-semibold text-orange-700">Total estimado del período</span>
+            <span class="text-[14px] font-bold text-orange-700">RD$980.99</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text -->
+      <div class="order-1 lg:order-2">
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-bold mb-5"
+              style="background:#fff7ed;color:#ea580c;border:1px solid #fed7aa">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>
+          Módulo de Gas
+        </span>
+
+        <h2 class="text-[32px] sm:text-[38px] font-bold leading-tight mb-5" style="color:#1A1A2E">
+          Lecturas de medidores<br/>
+          <span style="color:#ea580c">y cargos automáticos</span>
+        </h2>
+
+        <p class="text-[16px] text-slate-500 leading-relaxed mb-7">
+          Registra el consumo de gas de cada unidad mes a mes. El sistema calcula, convierte y genera el cargo proporcional a cada propietario sin hojas de cálculo.
+        </p>
+
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fff7ed">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Toma la foto del medidor desde el celular</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">Sube directamente la foto del display desde tu teléfono. Queda registrada como respaldo por unidad y período.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fff7ed">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Cálculo automático m³ → galones → monto</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">Configura el precio por galón y el factor de conversión una sola vez. El sistema calcula el costo de cada unidad al instante.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fff7ed">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Alertas de consumo inusual</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">Si una unidad consume el doble que el período anterior, el sistema lo marca automáticamente para que puedas verificar antes de cobrar.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fff7ed">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Genera los cargos con un clic</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">Una vez verificadas todas las lecturas, genera los cargos de gas de todas las unidades en un solo paso. Se integran con el módulo de cuotas y cobros.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── HOW IT WORKS ──────────────────────────────────────────────────────────── -->
+<section class="py-20 sm:py-28 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-5 sm:px-8">
+    <div class="text-center mb-14">
+      <p class="text-[12px] font-bold uppercase tracking-widest" style="color:#00c7fc">Inicio rápido</p>
+      <h2 class="mt-2 text-[32px] sm:text-[40px] font-bold" style="color:#1A1A2E">Funciona en minutos, no en semanas</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center relative">
+        <div class="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-white font-bold text-[20px] shadow-md mb-5" style="background:#00c7fc">1</div>
+        <h3 class="text-[17px] font-bold mb-2" style="color:#1A1A2E">Regístrate</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">Crea tu cuenta en segundos, sin tarjeta de crédito. El plan gratuito ya incluye todo lo que necesitas para empezar.</p>
+        <div class="hidden md:block absolute top-7 left-[calc(50%+28px)] w-[calc(100%-56px)] h-0.5 border-t-2 border-dashed border-slate-200"></div>
+      </div>
+      <div class="text-center relative">
+        <div class="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-white font-bold text-[20px] shadow-md mb-5" style="background:#00c7fc">2</div>
+        <h3 class="text-[17px] font-bold mb-2" style="color:#1A1A2E">Crea tu condominio y unidades</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">Configura el edificio, agrega cada unidad y asigna a sus propietarios. El asistente te guía paso a paso.</p>
+        <div class="hidden md:block absolute top-7 left-[calc(50%+28px)] w-[calc(100%-56px)] h-0.5 border-t-2 border-dashed border-slate-200"></div>
+      </div>
+      <div class="text-center">
+        <div class="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-white font-bold text-[20px] shadow-md mb-5" style="background:#00c7fc">3</div>
+        <h3 class="text-[17px] font-bold mb-2" style="color:#1A1A2E">Envía tus primeras cuotas</h3>
+        <p class="text-[14px] text-slate-500 leading-relaxed">Genera las cuotas de mantenimiento del mes y notifica a cada propietario por WhatsApp o email con un clic.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── VISITAS CON QR ───────────────────────────────────────────────────────── -->
+<section id="visitas" class="py-20 sm:py-28" style="background:#f8fafc">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+      <!-- Text -->
+      <div>
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[12px] font-bold mb-5"
+              style="background:#eef2ff;color:#4f46e5;border:1px solid #c7d2fe">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Control de visitas
+        </span>
+
+        <h2 class="text-[32px] sm:text-[38px] font-bold leading-tight mb-5" style="color:#1A1A2E">
+          Registra visitas<br/>
+          <span style="color:#4f46e5">con QR y foto de cédula</span>
+        </h2>
+
+        <p class="text-[16px] text-slate-500 leading-relaxed mb-7">
+          El personal de seguridad sabe exactamente quién entra, a qué unidad va y a qué hora salió. Historial completo, fotos del documento de identidad y pre-autorización desde el portal del propietario.
+        </p>
+
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#eef2ff">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Pre-registro con QR de autorización</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">El propietario pre-registra la visita desde el portal. El visitante llega con su QR, el guardia lo escanea y confirma el acceso en segundos.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#eef2ff">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Foto de cédula o documento de identidad</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">Captura la foto del ID directamente desde el celular al momento de registrar la visita. Queda guardada en el historial del condominio.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#eef2ff">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Registro de entrada y salida con hora exacta</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">El guardia confirma la llegada y la salida. Saber quién estuvo en el edificio, cuándo y por cuánto tiempo, en tiempo real.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-0.5 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style="background:#eef2ff">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <span class="text-[15px] font-semibold text-slate-900">Tipo de visita: familiar, proveedor, delivery y más</span>
+              <p class="text-[13px] text-slate-500 mt-0.5">Clasifica cada visita por tipo para llevar reportes precisos. Ideal para auditorías de seguridad o cumplimiento.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Visual mock -->
+      <div>
+        <div class="rounded-2xl border border-indigo-100 overflow-hidden shadow-sm bg-white">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-4 py-3 border-b border-indigo-50" style="background:#eef2ff">
+            <div class="flex items-center gap-2">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span class="text-[13px] font-bold text-indigo-700">Registro de Visitas</span>
+            </div>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-600">Hoy · 4 visitas</span>
+          </div>
+
+          <!-- Visit rows -->
+          <div class="divide-y divide-slate-50">
+
+            <!-- Visita 1 EN_EDIFICIO -->
+            <div class="px-4 py-3.5">
+              <div class="flex items-start gap-3">
+                <!-- QR/foto placeholder -->
+                <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center border border-indigo-100" style="background:#eef2ff">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="4" height="4"/><rect x="10" y="14" width="1" height="1" fill="#4f46e5"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-0.5">
+                    <span class="text-[13px] font-bold text-slate-900 truncate">Roberto Santos</span>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">En edificio</span>
+                  </div>
+                  <div class="flex items-center gap-3 text-[11px] text-slate-400">
+                    <span>Apto 4B · Familiar</span>
+                    <span>Entrada: 10:32 AM</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-1.5">
+                    <div class="w-7 h-5 rounded bg-slate-200 flex items-center justify-center overflow-hidden">
+                      <svg width="12" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/><path d="M6 8h3M6 12h3"/></svg>
+                    </div>
+                    <span class="text-[10px] text-green-600 font-medium">Cédula capturada</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visita 2 PRE_REGISTRADO -->
+            <div class="px-4 py-3.5">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center border border-slate-100 bg-slate-50">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="4" height="4"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-0.5">
+                    <span class="text-[13px] font-bold text-slate-900 truncate">Plomería Jiménez</span>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0">Pre-registrado</span>
+                  </div>
+                  <div class="flex items-center gap-3 text-[11px] text-slate-400">
+                    <span>Apto 2A · Proveedor</span>
+                    <span>Esperado: 2:00 PM</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-1.5">
+                    <div class="w-5 h-5 rounded flex items-center justify-center" style="background:#eef2ff">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span class="text-[10px] text-indigo-600 font-medium">QR enviado al visitante</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visita 3 SALIDO -->
+            <div class="px-4 py-3.5 opacity-60">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center border border-slate-100 bg-slate-50">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-0.5">
+                    <span class="text-[13px] font-semibold text-slate-600 truncate">Delivery Express</span>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 flex-shrink-0">Salido</span>
+                  </div>
+                  <div class="flex items-center gap-3 text-[11px] text-slate-400">
+                    <span>Recepción · Delivery</span>
+                    <span>09:15 – 09:22 AM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Footer action -->
+          <div class="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50">
+            <span class="text-[12px] text-slate-400">Historial completo disponible</span>
+            <button class="inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-lg text-white transition-all" style="background:#4f46e5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="4" height="4"/></svg>
+              Nueva visita
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── COMPARISON ───────────────────────────────────────────────────────────── -->
+<section class="py-20 sm:py-28 bg-white">
+  <div class="max-w-4xl mx-auto px-5 sm:px-8">
+    <div class="text-center mb-12">
+      <p class="text-[12px] font-bold uppercase tracking-widest" style="color:#00c7fc">¿Por qué cambiar?</p>
+      <h2 class="mt-2 text-[32px] sm:text-[38px] font-bold" style="color:#1A1A2E">Kondominia vs. la forma tradicional</h2>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+      <div class="grid grid-cols-4 bg-slate-50 border-b border-slate-200 text-[12px] font-bold uppercase tracking-wider text-slate-500">
+        <div class="px-4 py-3 col-span-1"></div>
+        <div class="px-4 py-3 text-center border-l border-slate-200">Excel / Hojas</div>
+        <div class="px-4 py-3 text-center border-l border-slate-200">WhatsApp / Email</div>
+        <div class="px-4 py-3 text-center border-l border-slate-100 rounded-tr-none" style="background:#1A1A2E;color:#00c7fc">Kondominia</div>
+      </div>
+
+      <!-- Rows -->
+      <div id="comparison-rows">
+        <!-- Row template repeated -->
+      </div>
+
+      <table class="min-w-full text-[14px]">
+        <tbody>
+          <tr class="border-b border-slate-100">
+            <td class="px-4 py-3.5 font-semibold text-slate-700">Control de gastos</td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><span class="text-amber-400 font-bold">~</span></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="check mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></td>
+          </tr>
+          <tr class="border-b border-slate-100 bg-slate-50/50">
+            <td class="px-4 py-3.5 font-semibold text-slate-700">Nómina y TSS</td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="check mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <td class="px-4 py-3.5 font-semibold text-slate-700">Reportes DGII automáticos</td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="check mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></td>
+          </tr>
+          <tr class="border-b border-slate-100 bg-slate-50/50">
+            <td class="px-4 py-3.5 font-semibold text-slate-700">Portal para propietarios</td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><span class="text-amber-400 font-bold">~</span></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="check mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></td>
+          </tr>
+          <tr class="border-b border-slate-100">
+            <td class="px-4 py-3.5 font-semibold text-slate-700">Multi-condominio</td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><span class="text-amber-400 font-bold">~</span></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="check mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3.5 font-semibold text-slate-700">Historial auditado</td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="cross mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
+            <td class="px-4 py-3.5 text-center border-l border-slate-100"><svg class="check mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3 text-center text-[12px] text-slate-400">~ Parcialmente posible con esfuerzo manual</p>
+  </div>
+</section>
+
+
+<!-- ─── PRICING ──────────────────────────────────────────────────────────────── -->
+<section id="planes" class="py-20 sm:py-28 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="text-center mb-10">
+      <p class="text-[12px] font-bold uppercase tracking-widest" style="color:#00c7fc">Precios transparentes</p>
+      <h2 class="mt-2 text-[32px] sm:text-[40px] font-bold" style="color:#1A1A2E">Elige el plan para tu operación</h2>
+      <p class="mt-3 text-[15px] text-slate-500 max-w-xl mx-auto">
+        Precio por unidad · ITBIS no incluido · Soporte en español incluido
+      </p>
+      <!-- Annual toggle -->
+      <div class="flex items-center justify-center gap-3 mt-5">
+        <span id="lbl-monthly" class="text-[14px] font-semibold text-slate-700">Mensual</span>
+        <button id="billing-toggle"
+          class="relative w-11 h-6 rounded-full transition-colors"
+          style="background:#00c7fc" aria-checked="false">
+          <span id="toggle-dot" class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"></span>
+        </button>
+        <span id="lbl-annual" class="text-[14px] font-semibold text-slate-400">
+          Anual
+          <span class="ml-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold text-white" style="background:#00c7fc">−15%</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Plans grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+
+      <!-- GRATIS -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col">
+        <div class="mb-4">
+          <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-500 mb-3 uppercase tracking-wide">Gratis</span>
+          <p class="text-[11px] text-slate-400 mb-2">1–10 unidades</p>
+          <div class="flex items-end gap-1 mb-0.5">
+            <span class="text-[30px] font-bold leading-none" style="color:#1A1A2E">RD$0</span>
+          </div>
+          <p class="text-[11px] text-slate-400">para siempre</p>
+        </div>
+        <ul class="space-y-2 text-[12px] text-slate-600 flex-1 mb-5">
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>1 usuario</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Cuotas y cobros</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Compartir por WhatsApp</li>
+        </ul>
+        <a href="/register" class="block text-center py-2 rounded-xl text-[12px] font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+          Empezar
+        </a>
+      </div>
+
+      <!-- PLUS -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col">
+        <div class="mb-4">
+          <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold mb-3 uppercase tracking-wide" style="background:#e0f8ff;color:#0091b5">Plus</span>
+          <p class="text-[11px] text-slate-400 mb-2">11–50 unidades</p>
+          <div class="flex items-end gap-1 mb-0.5">
+            <span class="text-[28px] font-bold leading-none" style="color:#1A1A2E">RD$<span class="price-plus">55</span></span>
+            <span class="text-slate-400 text-[11px] mb-1">/u</span>
+          </div>
+          <p class="text-[11px] text-slate-400">desde RD$<span class="from-plus">605</span>/mes</p>
+        </div>
+        <ul class="space-y-2 text-[12px] text-slate-600 flex-1 mb-5">
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>3 usuarios</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Email a residentes</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Proveedores y facturas</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Control de visitas</li>
+        </ul>
+        <a href="/register" class="block text-center py-2 rounded-xl text-[12px] font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+          Empezar
+        </a>
+      </div>
+
+      <!-- PRO — Recomendado -->
+      <div class="pricing-highlight rounded-2xl p-5 flex flex-col relative shadow-lg" style="border:2px solid #00c7fc">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
+          <span class="px-3 py-1 rounded-full text-[10px] font-bold text-white" style="background:#00c7fc">Recomendado</span>
+        </div>
+        <div class="mb-4">
+          <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold mb-3 uppercase tracking-wide" style="background:#00c7fc25;color:#00c7fc">Pro</span>
+          <p class="text-[11px] text-slate-400 mb-2">51–100 unidades</p>
+          <div class="flex items-end gap-1 mb-0.5">
+            <span class="text-[28px] font-bold leading-none text-white">RD$<span class="price-pro">38</span></span>
+            <span class="text-slate-400 text-[11px] mb-1">/u</span>
+          </div>
+          <p class="text-[11px] text-slate-400">desde RD$<span class="from-pro">2,760</span>/mes</p>
+        </div>
+        <ul class="space-y-2 text-[12px] text-slate-200 flex-1 mb-5">
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>5 usuarios</li>
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Portal residentes</li>
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Caja, bancos y nómina</li>
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reportes y pagos en línea</li>
+        </ul>
+        <a href="/register" class="block text-center py-2 rounded-xl text-[12px] font-bold text-white transition-all"
+           style="background:#00c7fc"
+           onmouseover="this.style.background='#00acd8'"
+           onmouseout="this.style.background='#00c7fc'">
+          Empezar
+        </a>
+      </div>
+
+      <!-- MAX -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col">
+        <div class="mb-4">
+          <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold mb-3 uppercase tracking-wide" style="background:#f0fdf4;color:#16a34a">Max</span>
+          <p class="text-[11px] text-slate-400 mb-2">101–250 unidades</p>
+          <div class="flex items-end gap-1 mb-0.5">
+            <span class="text-[28px] font-bold leading-none" style="color:#1A1A2E">RD$<span class="price-max">30</span></span>
+            <span class="text-slate-400 text-[11px] mb-1">/u</span>
+          </div>
+          <p class="text-[11px] text-slate-400">desde RD$<span class="from-max">3,810</span>/mes</p>
+        </div>
+        <ul class="space-y-2 text-[12px] text-slate-600 flex-1 mb-5">
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>10 usuarios</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>200 facturas/mes</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Toda la suite Pro</li>
+        </ul>
+        <a href="/register" class="block text-center py-2 rounded-xl text-[12px] font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+          Empezar
+        </a>
+      </div>
+
+      <!-- PREMIUM -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col">
+        <div class="mb-4">
+          <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold mb-3 uppercase tracking-wide" style="background:#faf5ff;color:#7c3aed">Premium</span>
+          <p class="text-[11px] text-slate-400 mb-2">251–500 unidades</p>
+          <div class="flex items-end gap-1 mb-0.5">
+            <span class="text-[28px] font-bold leading-none" style="color:#1A1A2E">RD$<span class="price-premium">24</span></span>
+            <span class="text-slate-400 text-[11px] mb-1">/u</span>
+          </div>
+          <p class="text-[11px] text-slate-400">desde RD$<span class="from-premium">7,510</span>/mes</p>
+        </div>
+        <ul class="space-y-2 text-[12px] text-slate-600 flex-1 mb-5">
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Usuarios sin límite</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reportes fiscales RD</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Branding personalizado</li>
+          <li class="flex items-start gap-1.5"><svg class="check flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Onboarding asistido</li>
+        </ul>
+        <a href="mailto:hola@kondominia.com" class="block text-center py-2 rounded-xl text-[12px] font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+          Contactar
+        </a>
+      </div>
+
+      <!-- ULTRA -->
+      <div class="rounded-2xl border border-slate-200 p-5 flex flex-col" style="background:#1A1A2E">
+        <div class="mb-4">
+          <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold mb-3 uppercase tracking-wide" style="background:#ffffff15;color:#94a3b8">Ultra</span>
+          <p class="text-[11px] text-slate-500 mb-2">501+ unidades</p>
+          <div class="mb-0.5">
+            <span class="text-[22px] font-bold leading-none text-white">Contáctanos</span>
+          </div>
+          <p class="text-[11px] text-slate-500">propuesta a la medida</p>
+        </div>
+        <ul class="space-y-2 text-[12px] text-slate-400 flex-1 mb-5">
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>SLA y soporte dedicado</li>
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Onboarding y migración asistida</li>
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Integraciones a la medida</li>
+          <li class="flex items-start gap-1.5"><svg style="color:#00c7fc" class="flex-shrink-0 mt-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Contrato anual</li>
+        </ul>
+        <a href="mailto:hola@kondominia.com" class="block text-center py-2 rounded-xl text-[12px] font-bold text-white border border-white/20 hover:bg-white/10 transition-colors">
+          Hablar con ventas
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Add-ons -->
+    <div class="mt-10">
+      <p class="text-[12px] font-bold uppercase tracking-widest text-center text-slate-400 mb-5">Add-ons opcionales</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+
+        <!-- ECF / Polaris -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#eef2ff">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <p class="text-[13px] font-bold text-slate-900">ECF / Polaris</p>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#4f46e5">Desde Plus</span>
+              </div>
+              <p class="text-[12px] text-slate-500 mb-3">Facturación electrónica DGII para República Dominicana.</p>
+              <div class="flex items-end gap-2">
+                <span class="text-[18px] font-bold" style="color:#1A1A2E">RD$1,500<span class="text-[12px] font-normal text-slate-400">/mes</span></span>
+                <span class="text-[11px] text-slate-400">+ $200 USD certificación DGII</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gas -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#fff7ed">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <p class="text-[13px] font-bold text-slate-900">Cuotas de Gas</p>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:#fff7ed;color:#ea580c">Por condominio</span>
+              </div>
+              <p class="text-[12px] text-slate-500 mb-3">Lecturas, conversiones y cuotas de gas propano centralizado.</p>
+              <div class="flex items-end gap-2">
+                <span class="text-[18px] font-bold" style="color:#1A1A2E">RD$1,500<span class="text-[12px] font-normal text-slate-400">/mes</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <p class="mt-6 text-center text-[12px] text-slate-400">
+      ITBIS no incluido · 15% de descuento pagando anualmente · Precios en RD$
+    </p>
+  </div>
+</section>
+
+
+<!-- ─── TESTIMONIALS ─────────────────────────────────────────────────────────── -->
+<section id="testimonios" class="py-20 sm:py-28 bg-white relative overflow-hidden">
+
+  <!-- Americas map watermark -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.035]">
+    <svg viewBox="0 0 420 600" class="h-full max-h-[600px] w-auto" fill="#1A1A2E" xmlns="http://www.w3.org/2000/svg">
+      <!-- North America simplified -->
+      <path d="M80,20 L160,15 L200,30 L230,20 L250,40 L240,60 L260,75 L255,95 L240,110 L220,105 L210,125 L195,140 L175,145 L160,160 L140,175 L125,195 L110,200 L95,220 L80,215 L70,230 L55,225 L45,210 L30,205 L20,185 L25,165 L15,145 L20,120 L35,100 L40,80 L55,65 L65,45 Z"/>
+      <!-- Central America -->
+      <path d="M140,175 L155,185 L165,200 L160,215 L150,220 L140,210 L130,220 L120,215 L125,195 Z"/>
+      <!-- Caribbean -->
+      <path d="M195,175 L210,172 L215,178 L208,183 L198,180 Z"/>
+      <path d="M218,170 L228,168 L232,174 L225,178 Z"/>
+      <!-- South America -->
+      <path d="M150,230 L185,220 L220,225 L250,240 L270,260 L280,285 L285,315 L275,345 L265,370 L260,400 L255,430 L240,455 L220,470 L200,480 L180,475 L160,460 L145,440 L130,415 L120,385 L115,355 L110,320 L115,290 L120,265 L130,245 Z"/>
+    </svg>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 relative">
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <p class="text-[12px] font-bold uppercase tracking-widest mb-2" style="color:#00c7fc">Testimonios</p>
+      <h2 class="text-[32px] sm:text-[40px] font-bold" style="color:#1A1A2E">Lo que dicen nuestros clientes</h2>
+      <p class="mt-2 text-[14px] text-slate-400 mb-6">Administradoras y contadoras que ya cambiaron la forma de trabajar</p>
+      <!-- Country flags strip -->
+      <div class="flex items-center justify-center flex-wrap gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-slate-100 text-slate-700">
+          <span class="text-[17px] leading-none">🇩🇴</span> Rep. Dominicana
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-slate-100 text-slate-700">
+          <span class="text-[17px] leading-none">🇨🇴</span> Colombia
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-slate-100 text-slate-700">
+          <span class="text-[17px] leading-none">🇬🇹</span> Guatemala
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-slate-100 text-slate-700">
+          <span class="text-[17px] leading-none">🇵🇦</span> Panamá
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-slate-100 text-slate-700">
+          <span class="text-[17px] leading-none">🇵🇷</span> Puerto Rico
+        </span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50/80 backdrop-blur-sm">
+        <div class="flex gap-0.5 mb-4">
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="text-[14px] text-slate-600 leading-relaxed mb-5">
+          "Antes pasaba horas en Excel preparando los reportes de ITBIS. Con Kondominia los genero en segundos y los entrego directamente al contador. Cambió completamente mi flujo de trabajo."
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[14px] uppercase" style="background:#1A1A2E">M</div>
+            <div>
+              <p class="text-[13px] font-bold text-slate-900">María Rodríguez</p>
+              <p class="text-[12px] text-slate-400">Administradora · Santo Domingo</p>
+            </div>
+          </div>
+          <span class="text-[22px]" title="República Dominicana">🇩🇴</span>
+        </div>
+      </div>
+
+      <!-- Testimonio Colombia -->
+      <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50/80 backdrop-blur-sm">
+        <div class="flex gap-0.5 mb-4">
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="text-[14px] text-slate-600 leading-relaxed mb-5">
+          "Administramos 6 condominios con un equipo de 4 personas. Con el plan Max todos trabajamos en simultáneo sin pisarnos. Los propietarios ven sus estados de cuenta solos — ya no nos llaman a preguntar."
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[14px]" style="background:#1A1A2E">C</div>
+            <div>
+              <p class="text-[13px] font-bold text-slate-900">Carlos Mejía</p>
+              <p class="text-[12px] text-slate-400">Director · Bogotá, Colombia</p>
+            </div>
+          </div>
+          <span class="text-[22px]" title="Colombia">🇨🇴</span>
+        </div>
+      </div>
+
+      <!-- Testimonio Puerto Rico -->
+      <div class="p-6 rounded-2xl border border-slate-100 bg-slate-50/80 backdrop-blur-sm">
+        <div class="flex gap-0.5 mb-4">
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="text-amber-400" width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="text-[14px] text-slate-600 leading-relaxed mb-5">
+          "Llevábamos tres residenciales en Excel y el caos era total. Con Kondominia centralizamos todo — gastos, proveedores, estados de cuenta — y los propietarios consultan su balance solos desde el portal. Nos ahorró horas cada mes."
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[14px]" style="background:#1A1A2E">A</div>
+            <div>
+              <p class="text-[13px] font-bold text-slate-900">Ana Pérez</p>
+              <p class="text-[12px] text-slate-400">Administradora · San Juan, Puerto Rico</p>
+            </div>
+          </div>
+          <span class="text-[22px]" title="Puerto Rico">🇵🇷</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── CTA FINAL ────────────────────────────────────────────────────────────── -->
+<section class="hero-bg py-20 sm:py-28 relative overflow-hidden">
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-0 right-0 w-96 h-96 rounded-full opacity-10" style="background:radial-gradient(circle, #00c7fc 0%, transparent 70%)"></div>
+  </div>
+  <div class="max-w-3xl mx-auto px-5 sm:px-8 text-center relative">
+    <h2 class="text-[36px] sm:text-[46px] font-bold text-white leading-tight mb-5">
+      Empieza a administrar mejor<br/>
+      <span style="color:#00c7fc">desde hoy</span>
+    </h2>
+    <p class="text-[16px] text-slate-300 mb-9 max-w-xl mx-auto leading-relaxed">
+      Regístrate gratis, sin tarjeta de crédito. Tu primer condominio estará listo en minutos.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="/register"
+         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-[16px] font-bold text-white shadow-xl transition-all"
+         style="background:#00c7fc"
+         onmouseover="this.style.background='#00acd8';this.style.transform='translateY(-2px)'"
+         onmouseout="this.style.background='#00c7fc';this.style.transform='translateY(0)'">
+        Crear cuenta gratis
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <button onclick="openContactModal()"
+         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-[16px] font-semibold text-white border border-white/20 hover:bg-white/10 transition-all">
+        Hablar con ventas
+      </button>
+    </div>
+    <p class="mt-6 text-[13px] text-slate-400">
+      ¿Preguntas? <button onclick="openContactModal()" class="underline hover:text-white transition-colors">Escríbenos aquí</button>
+    </p>
+  </div>
+</section>
+
+
+<!-- ─── FOOTER ───────────────────────────────────────────────────────────────── -->
+<footer style="background:#1A1A2E" class="border-t border-white/10">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1">
+        <a href="#" class="flex items-center mb-3">
+          <img src="./kondominia-5-3.png" alt="Kondominia" class="h-12 w-auto" />
+        </a>
+        <p class="text-[13px] text-slate-400 leading-relaxed mb-4">
+          Plataforma de gestión condominial para administradoras en Latinoamérica y el Caribe.
+        </p>
+        <!-- Social -->
+        <div class="flex items-center gap-3">
+          <a href="https://wa.me/18092244502" target="_blank" rel="noopener" title="WhatsApp"
+             class="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-110"
+             style="background:#25D366">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2C6.477 2 2 6.477 2 12.004c0 1.77.463 3.431 1.27 4.878L2 22l5.234-1.243A9.953 9.953 0 0 0 12.004 22C17.53 22 22 17.523 22 12.004 22 6.477 17.53 2 12.004 2zm0 18.214a8.196 8.196 0 0 1-4.188-1.148l-.3-.178-3.106.737.762-3.027-.196-.31A8.21 8.21 0 0 1 3.786 12c0-4.534 3.684-8.22 8.218-8.22 4.535 0 8.22 3.686 8.22 8.22 0 4.535-3.685 8.214-8.22 8.214z"/></svg>
+          </a>
+          <a href="https://instagram.com/kondominia" target="_blank" rel="noopener" title="Instagram"
+             class="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-110"
+             style="background:linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <span class="text-[12px] text-slate-500">@kondominia</span>
+        </div>
+      </div>
+
+      <!-- Product -->
+      <div>
+        <p class="text-[12px] font-bold uppercase tracking-widest text-slate-400 mb-4">Producto</p>
+        <ul class="space-y-2.5 text-[14px] text-slate-300">
+          <li><a href="#funcionalidades" class="hover:text-white transition-colors">Funcionalidades</a></li>
+          <li><a href="#planes" class="hover:text-white transition-colors">Planes y precios</a></li>
+          <li><a href="#cuotas" class="hover:text-white transition-colors">Cuotas y Cobros</a></li>
+          <li><a href="/login" class="hover:text-white transition-colors">Iniciar sesión</a></li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <p class="text-[12px] font-bold uppercase tracking-widest text-slate-400 mb-4">Compañía</p>
+        <ul class="space-y-2.5 text-[14px] text-slate-300">
+          <li><a href="https://kondominia.com/blog" class="hover:text-white transition-colors">Blog</a></li>
+          <li>
+            <button onclick="openContactModal()" class="text-[14px] text-slate-300 hover:text-white transition-colors text-left">Contacto</button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <p class="text-[12px] font-bold uppercase tracking-widest text-slate-400 mb-4">Legal</p>
+        <ul class="space-y-2.5 text-[14px] text-slate-300">
+          <li><a href="/terminos" class="hover:text-white transition-colors">Términos de uso</a></li>
+          <li><a href="/privacidad" class="hover:text-white transition-colors">Política de privacidad</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-[13px] text-slate-500">© 2026 Kondominia. Todos los derechos reservados.</p>
+      <div class="flex items-center gap-2 text-[13px] text-slate-500">
+        <span>🇩🇴</span><span>🇨🇴</span><span>🇬🇹</span><span>🇵🇦</span><span>🇵🇷</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ─── FLOATING CONTACT WIDGET ──────────────────────────────────────────────── -->
+<div class="fixed bottom-6 right-5 z-40 flex flex-col gap-2">
+  <!-- WhatsApp -->
+  <a href="https://wa.me/18092244502?text=Hola%2C%20me%20interesa%20conocer%20más%20sobre%20Kondominia"
+     target="_blank" rel="noopener"
+     title="WhatsApp"
+     class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg text-white transition-all duration-200 hover:scale-110 hover:shadow-xl"
+     style="background:#25D366">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12.004 2C6.477 2 2 6.477 2 12.004c0 1.77.463 3.431 1.27 4.878L2 22l5.234-1.243A9.953 9.953 0 0 0 12.004 22C17.53 22 22 17.523 22 12.004 22 6.477 17.53 2 12.004 2zm0 18.214a8.196 8.196 0 0 1-4.188-1.148l-.3-.178-3.106.737.762-3.027-.196-.31A8.21 8.21 0 0 1 3.786 12c0-4.534 3.684-8.22 8.218-8.22 4.535 0 8.22 3.686 8.22 8.22 0 4.535-3.685 8.214-8.22 8.214z"/>
+    </svg>
+  </a>
+
+  <!-- Instagram -->
+  <a href="https://instagram.com/kondominia"
+     target="_blank" rel="noopener"
+     title="Instagram @kondominia"
+     class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg text-white transition-all duration-200 hover:scale-110 hover:shadow-xl"
+     style="background:linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+    </svg>
+  </a>
+</div>
+
+
+<!-- ─── PRÓXIMAMENTE MODAL ───────────────────────────────────────────────────── -->
+<div id="soon-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none!important">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeSoonModal()"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center">
+    <button onclick="closeSoonModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors text-slate-400">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5" style="background:#f0fdfe">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00c7fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Muy pronto</p>
+    <h3 class="text-[22px] font-bold text-slate-900 mb-2">Estamos casi listos</h3>
+    <p class="text-[14px] text-slate-500 leading-relaxed mb-6">
+      Kondominia estará disponible para el público en breve.<br/>
+      ¿Quieres ser de los primeros? Déjanos tus datos.
+    </p>
+    <button onclick="closeSoonModal(); openContactModal();"
+      class="w-full py-3 rounded-xl text-[14px] font-bold text-white transition-all mb-3"
+      style="background:#00c7fc">
+      Notifícame cuando abra
+    </button>
+    <button onclick="closeSoonModal()" class="w-full py-2.5 rounded-xl text-[14px] font-semibold text-slate-500 hover:bg-slate-50 transition-colors">
+      Cerrar
+    </button>
+  </div>
+</div>
+
+
+<!-- ─── CONTACT MODAL ─────────────────────────────────────────────────────────── -->
+<div id="contact-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none!important">
+  <!-- Backdrop -->
+  <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeContactModal()"></div>
+
+  <!-- Panel -->
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8">
+    <!-- Close -->
+    <button onclick="closeContactModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    <h3 class="text-[20px] font-bold text-slate-900 mb-1">Hablar con ventas</h3>
+    <p class="text-[13px] text-slate-500 mb-6">Cuéntanos sobre tu proyecto y te contactamos en menos de 24 horas.</p>
+
+    <!-- Form -->
+    <form id="contact-form" novalidate>
+      <!-- Honeypot (oculto para bots) -->
+      <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;pointer-events:none" />
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[12px] font-semibold text-slate-600 mb-1.5">Nombre completo *</label>
+          <input id="cf-nombre" type="text" placeholder="Tu nombre" required
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-semibold text-slate-600 mb-1.5">Correo electrónico *</label>
+          <input id="cf-email" type="email" placeholder="tu@email.com" required
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-semibold text-slate-600 mb-1.5">Teléfono / WhatsApp</label>
+          <input id="cf-telefono" type="tel" placeholder="+1 809 000 0000"
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition" />
+        </div>
+        <div>
+          <label class="block text-[12px] font-semibold text-slate-600 mb-1.5">¿Cuántas unidades administras?</label>
+          <select id="cf-unidades"
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition bg-white">
+            <option value="">Selecciona una opción</option>
+            <option value="1-10">1 – 10 unidades</option>
+            <option value="11-50">11 – 50 unidades</option>
+            <option value="51-200">51 – 200 unidades</option>
+            <option value="200+">Más de 200 unidades</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[12px] font-semibold text-slate-600 mb-1.5">Mensaje</label>
+          <textarea id="cf-mensaje" rows="3" placeholder="Cuéntanos sobre tu condominio o proyecto..."
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <p id="cf-error" class="hidden mt-3 text-[12px] text-red-500"></p>
+
+      <!-- Submit -->
+      <button type="submit" id="cf-submit"
+        class="mt-5 w-full py-3 rounded-xl text-[15px] font-bold text-white transition-all"
+        style="background:#00c7fc">
+        Enviar mensaje
+      </button>
+    </form>
+
+    <!-- Success state -->
+    <div id="cf-success" class="hidden text-center py-6">
+      <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style="background:#e0fdf4">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <p class="text-[18px] font-bold text-slate-900 mb-1">¡Mensaje enviado!</p>
+      <p class="text-[13px] text-slate-500">Te contactaremos en menos de 24 horas. También puedes escribirnos por WhatsApp.</p>
+      <a href="https://wa.me/18092244502" target="_blank"
+         class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[14px] font-semibold text-white transition-all"
+         style="background:#25D366">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.004 2C6.477 2 2 6.477 2 12.004c0 1.77.463 3.431 1.27 4.878L2 22l5.234-1.243A9.953 9.953 0 0 0 12.004 22C17.53 22 22 17.523 22 12.004 22 6.477 17.53 2 12.004 2zm0 18.214a8.196 8.196 0 0 1-4.188-1.148l-.3-.178-3.106.737.762-3.027-.196-.31A8.21 8.21 0 0 1 3.786 12c0-4.534 3.684-8.22 8.218-8.22 4.535 0 8.22 3.686 8.22 8.22 0 4.535-3.685 8.214-8.22 8.214z"/></svg>
+        Escribir por WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // Strip hash from URL so reload always starts at top
+  if (window.location.hash) {
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  document.documentElement.classList.add('no-smooth');
+  window.scrollTo(0, 0);
+  window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+    setTimeout(() => document.documentElement.classList.remove('no-smooth'), 100);
+  });
+
+  // "Próximamente" modal
+  function openSoonModal() {
+    var m = document.getElementById('soon-modal');
+    m.style.removeProperty('display');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSoonModal() {
+    document.getElementById('soon-modal').style.setProperty('display', 'none', 'important');
+    document.body.style.overflow = '';
+  }
+
+  // Intercept ALL /login and /register links
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (href === '/login' || href === '/register') {
+      e.preventDefault();
+      openSoonModal();
+    }
+  });
+
+  // Contact modal + Make webhook
+  var MAKE_WEBHOOK = 'https://hook.us2.make.com/9j2h32wwhwzq8993j4jkvop12k3kryoe';
+
+  function openContactModal() {
+    var modal = document.getElementById('contact-modal');
+    modal.style.removeProperty('display');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeContactModal() {
+    var modal = document.getElementById('contact-modal');
+    modal.style.setProperty('display', 'none', 'important');
+    document.body.style.overflow = '';
+  }
+
+  // Close modals on Escape
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeSoonModal(); closeContactModal(); }
+  });
+
+  document.getElementById('contact-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Honeypot check — bots fill this field
+    var honeypot = this.querySelector('input[name="website"]');
+    if (honeypot && honeypot.value) return;
+
+    var nombre   = document.getElementById('cf-nombre').value.trim();
+    var email    = document.getElementById('cf-email').value.trim();
+    var telefono = document.getElementById('cf-telefono').value.trim();
+    var unidades = document.getElementById('cf-unidades').value;
+    var mensaje  = document.getElementById('cf-mensaje').value.trim();
+    var errEl    = document.getElementById('cf-error');
+    var btn      = document.getElementById('cf-submit');
+
+    if (!nombre || !email) {
+      errEl.textContent = 'Por favor completa nombre y correo electrónico.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: nombre,
+        email: email,
+        telefono: telefono || '—',
+        unidades: unidades || '—',
+        mensaje: mensaje || '—',
+        fecha: new Date().toISOString(),
+        origen: 'kondominia-landing'
+      })
+    })
+    .then(function () {
+      document.getElementById('contact-form').classList.add('hidden');
+      document.getElementById('cf-success').classList.remove('hidden');
+    })
+    .catch(function () {
+      btn.disabled = false;
+      btn.textContent = 'Enviar mensaje';
+      errEl.textContent = 'Hubo un error al enviar. Intenta por WhatsApp.';
+      errEl.classList.remove('hidden');
+    });
+  });
+
+  // Mobile hamburger menu
+  (function () {
+    var toggle  = document.getElementById('nav-toggle');
+    var menu    = document.getElementById('mobile-menu');
+    var ham1    = document.getElementById('ham-1');
+    var ham2    = document.getElementById('ham-2');
+    var ham3    = document.getElementById('ham-3');
+    var open    = false;
+
+    function closeMenu() {
+      open = false;
+      menu.style.maxHeight = '0';
+      ham1.style.transform = '';
+      ham2.style.opacity   = '1';
+      ham3.style.transform = '';
+    }
+
+    toggle.addEventListener('click', function () {
+      open = !open;
+      if (open) {
+        menu.style.maxHeight = menu.scrollHeight + 'px';
+        // Animate to ✕
+        ham1.style.transform = 'translateY(8px) rotate(45deg)';
+        ham2.style.opacity   = '0';
+        ham3.style.transform = 'translateY(-8px) rotate(-45deg)';
+      } else {
+        closeMenu();
+      }
+    });
+
+    // Close menu when a link is clicked
+    document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+      link.addEventListener('click', closeMenu);
+    });
+  })();
+
+  // Billing toggle (monthly ↔ annual -15%)
+  (function () {
+    var isAnnual = false;
+    var PRICES = {
+      monthly: { plus: '55',  pro: '38',  max: '30',  premium: '24'  },
+      annual:  { plus: '47',  pro: '32',  max: '26',  premium: '20'  }
+    };
+    var FROMS = {
+      monthly: { plus: '605',   pro: '2,760', max: '3,810', premium: '7,510' },
+      annual:  { plus: '517',   pro: '2,346', max: '3,302', premium: '6,384' }
+    };
+
+    var btn  = document.getElementById('billing-toggle');
+    var dot  = document.getElementById('toggle-dot');
+    var lblM = document.getElementById('lbl-monthly');
+    var lblA = document.getElementById('lbl-annual');
+
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      isAnnual = !isAnnual;
+      var p = isAnnual ? PRICES.annual  : PRICES.monthly;
+      var f = isAnnual ? FROMS.annual   : FROMS.monthly;
+
+      document.querySelector('.price-plus').textContent    = p.plus;
+      document.querySelector('.price-pro').textContent     = p.pro;
+      document.querySelector('.price-max').textContent     = p.max;
+      document.querySelector('.price-premium').textContent = p.premium;
+
+      document.querySelector('.from-plus').textContent    = f.plus;
+      document.querySelector('.from-pro').textContent     = f.pro;
+      document.querySelector('.from-max').textContent     = f.max;
+      document.querySelector('.from-premium').textContent = f.premium;
+
+      if (isAnnual) {
+        dot.style.transform = 'translateX(20px)';
+        btn.style.background = '#00c7fc';
+        btn.setAttribute('aria-checked', 'true');
+        lblM.style.fontWeight = '400';
+        lblM.style.color = '#94a3b8';
+        lblA.style.fontWeight = '700';
+        lblA.style.color = '#1A1A2E';
+      } else {
+        dot.style.transform = 'translateX(0)';
+        btn.setAttribute('aria-checked', 'false');
+        lblM.style.fontWeight = '700';
+        lblM.style.color = '#334155';
+        lblA.style.fontWeight = '400';
+        lblA.style.color = '#94a3b8';
+      }
+    });
+  })();
+
+  // Hero rotating property type
+  (function () {
+    var types = ['Condominios', 'Residenciales', 'Plazas'];
+    var idx = 0;
+    var el = document.getElementById('prop-type');
+    if (!el) return;
+    setInterval(function () {
+      el.style.opacity = '0';
+      setTimeout(function () {
+        idx = (idx + 1) % types.length;
+        el.textContent = types[idx];
+        el.style.opacity = '1';
+      }, 350);
+    }, 2800);
+  })();
+
+  // Hero rotating tagline (independent timing)
+  (function () {
+    var taglines = ['Sin Complicaciones', 'Ágil y Seguro', 'De manera Confiable'];
+    var idx = 0;
+    var el = document.getElementById('prop-tagline');
+    if (!el) return;
+    setInterval(function () {
+      el.style.opacity = '0';
+      setTimeout(function () {
+        idx = (idx + 1) % taglines.length;
+        el.textContent = taglines[idx];
+        el.style.opacity = '1';
+      }, 350);
+    }, 3700);
+  })();
+</script>
+</body>
+</html>
