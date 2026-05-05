@@ -369,7 +369,7 @@
         </span>
         <h2 class="text-[32px] sm:text-[38px] font-bold text-white leading-tight mb-5">
           Genera cuotas y comparte<br/>
-          cobros por
+          por
           <span class="inline-flex items-center gap-1.5 align-middle" style="color:#25D366">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="16" cy="16" r="16" fill="#25D366"/>
@@ -820,7 +820,7 @@
       <div class="text-center">
         <div class="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-white font-bold text-[20px] shadow-md mb-5" style="background:#00c7fc">3</div>
         <h3 class="text-[17px] font-bold mb-2" style="color:#1A1A2E">Envía tus primeras cuotas</h3>
-        <p class="text-[14px] text-slate-500 leading-relaxed">Genera las cuotas del mes y comparte por WhatsApp o email los cobros, recibos y estados de cuenta con un clic.</p>
+        <p class="text-[14px] text-slate-500 leading-relaxed">Genera las cuotas del mes y comparte por WhatsApp o email cuotas, recibos, estados de cuenta y estados mensuales con un clic.</p>
       </div>
     </div>
   </div>
@@ -1002,19 +1002,21 @@
     </div>
 
     <div class="rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <div class="grid grid-cols-4 bg-slate-50 border-b border-slate-200 text-[12px] font-bold uppercase tracking-wider text-slate-500">
-        <div class="px-4 py-3 col-span-1"></div>
-        <div class="px-4 py-3 text-center border-l border-slate-200">Excel / Hojas</div>
-        <div class="px-4 py-3 text-center border-l border-slate-200">WhatsApp / Email</div>
-        <div class="px-4 py-3 text-center border-l border-slate-100 rounded-tr-none" style="background:#1A1A2E;color:#00c7fc">Kondominia</div>
-      </div>
-
-      <!-- Rows -->
-      <div id="comparison-rows">
-        <!-- Row template repeated -->
-      </div>
-
-      <table class="min-w-full text-[14px]">
+      <table class="min-w-full table-fixed text-[14px] border-collapse">
+        <colgroup>
+          <col class="w-[38%]" />
+          <col class="w-[20.666%]" />
+          <col class="w-[20.666%]" />
+          <col class="w-[20.666%]" />
+        </colgroup>
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200 text-[12px] font-bold uppercase tracking-wider text-slate-500">
+            <th class="px-4 py-3 text-left"></th>
+            <th class="px-4 py-3 text-center border-l border-slate-200">Excel / Hojas</th>
+            <th class="px-4 py-3 text-center border-l border-slate-200">Procesos manuales</th>
+            <th class="px-4 py-3 text-center border-l border-slate-100" style="background:#1A1A2E;color:#00c7fc">Kondominia</th>
+          </tr>
+        </thead>
         <tbody>
           <tr class="border-b border-slate-100">
             <td class="px-4 py-3.5 font-semibold text-slate-700">Control de gastos</td>
